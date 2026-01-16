@@ -1,3 +1,4 @@
+import csv
 import pandas as pd
 from pathlib import Path
 
@@ -21,18 +22,22 @@ def read_trade_csv(path: str) -> pd.DataFrame:
         return pd.read_csv(
             path,
             sep="\t",
-            engine="c",              # faster + stricter, but usually works
+            engine="python",         # more tolerant of malformed rows
             encoding="utf-8",
-            on_bad_lines="skip"       # pandas >= 1.3
+            on_bad_lines="skip",      # pandas >= 1.3
+            quoting=csv.QUOTE_NONE,   # treat quotes as normal characters
+            escapechar="\\",
         )
     except Exception:
         # Fallback: comma-separated
         return pd.read_csv(
             path,
             sep=",",
-            engine="c",
+            engine="python",
             encoding="utf-8",
-            on_bad_lines="skip"
+            on_bad_lines="skip",
+            quoting=csv.QUOTE_NONE,
+            escapechar="\\",
         )
 
 # ---- load and stack ----------------------------------------
