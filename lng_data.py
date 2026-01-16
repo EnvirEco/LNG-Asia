@@ -15,10 +15,25 @@ OUT_PANEL = "lng_imports_monthly_panel.csv"
 OUT_QA = "lng_imports_monthly_qa.csv"
 
 # ---- helper: robust CSV reader -----------------------------
-def read_trade_csv(path):
-    # Your files are tab-separated
-    df = pd.read_csv(path, sep="\t", engine="python")
-    return df
+def read_trade_csv(path: str) -> pd.DataFrame:
+    # Try tab-separated first (your sample is TSV)
+    try:
+        return pd.read_csv(
+            path,
+            sep="\t",
+            engine="c",              # faster + stricter, but usually works
+            encoding="utf-8",
+            on_bad_lines="skip"       # pandas >= 1.3
+        )
+    except Exception:
+        # Fallback: comma-separated
+        return pd.read_csv(
+            path,
+            sep=",",
+            engine="c",
+            encoding="utf-8",
+            on_bad_lines="skip"
+        )
 
 # ---- load and stack ----------------------------------------
 dfs = []
